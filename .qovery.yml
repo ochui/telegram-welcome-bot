@@ -1,0 +1,16 @@
+---
+application:
+  name: "telegram-welcome-bot"
+  project: "tg-ibot"
+  organization: "QoveryCommunity"
+  storage:
+  - name: "image"
+    size: "10"
+    type: "ssd"
+    mount_point: "/mnt/image"
+routers:
+- name: "main-telegram-welcome-bot"
+  routes:
+  - application_name: "telegram-welcome-bot"
+    paths:
+    - "/*"
