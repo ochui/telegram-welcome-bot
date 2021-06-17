@@ -41,18 +41,18 @@ const optionDefinitions = [
 
 const options = commandLineArgs(optionDefinitions)
 
-if (!options['api-token']) throw new Error('❌   The --api-token (-t) option is required!')
-if (!options['bot-username']) throw new Error('❌   The --bot-username (-u) option is required!')
-if (!options['persistence-path']) console.warn(`⚠️   No --persistence-path (-p) defined, the default will be used: ${DEFAULT_PERSISTENCE_PATH}`)
+// if (!options['api-token']) throw new Error('❌   The --api-token (-t) option is required!')
+// if (!options['bot-username']) throw new Error('❌   The --bot-username (-u) option is required!')
+// if (!options['persistence-path']) console.warn(`⚠️   No --persistence-path (-p) defined, the default will be used: ${DEFAULT_PERSISTENCE_PATH}`)
 
 // ----------------
 // constants
 
 // bot info
-const API_TOKEN = options['api-token']
-const BOT_USERNAME = options['bot-username']
+const API_TOKEN = '1895100391:AAG-InORV9eSwDKPvd__JXzDEMBvuAOoVEI'
+const BOT_USERNAME =  'iSatoshiVerseBot'
 const PERSISTENCE_PATH = options['persistence-path'] || DEFAULT_PERSISTENCE_PATH
-const BOT_ID = +API_TOKEN.split(':')[0]
+const BOT_ID = '1895100391'
 
 // built-in messages
 const ERROR_MESSAGE_PREFIX = '⚠️ *Beep, boop, error!*'
