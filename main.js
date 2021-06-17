@@ -57,7 +57,65 @@ const BOT_ID = +API_TOKEN.split(':')[0]
 // built-in messages
 const ERROR_MESSAGE_PREFIX = '⚠️ *Beep, boop, error!*'
 
-const DEFAULT_MSG_TEMPLATE = '👋 Welcome to $groupname $firstname ($safeusername)! 😀'
+const DEFAULT_MSG_TEMPLATE = `
+Hi *$safeusername*, Welcome to iSatoshi Verse.
+
+iSatoshi Verse is an educational crypto group.
+
+We host quizzes❓, Rewards💰, and weekly AMA, KYI Sessions.
+
+We aren't like any other AMA group out there, iSatoshi Verse brings the goodies right to your doorstep.
+
+We don't just host AMA for Crypto Projects but we also conduct KYI Session with Influencers and Top Individuals in the Crypto Industry.
+
+👉 KYI(Know Your Influencers):
+iSatoshi Verse invites top Influencers and individuals in the crypto space to share their experiences with the iVerse Community. This way the community members ask questions and learn from the experiences of these successful individuals.
+
+🌎 iSatoshi Verse always has special goodies 🎁 for;
+
+👉 1. Most active members of the Universe 🏆 (iVerse King🤴/ Queen👸) -- 500$
+
+👉 2. Members who gets the most answers on AMA and Quiz every month 🏅(iVerse Nobel Men 👨‍💼/ Women👩‍💼) -- 500$
+
+👉 3. Member with the highest AMA project / Influencer Referrals (iVerse Lord🦸‍♂) -- 1000$
+
+👉 4. Most active members on Twitter 🏆 (Tweet King🤴/ Queen👸) -- 200$ [You can win by tweeting about iSatoshi Verse, Retweeting post and engaging in tweets]
+
+👉 5. Most active members of on Reddit 🏆 (Red King🤴/ Queen👸) -- 200$ [You can win by upvoting iSatoshi Verse, Reposting post and engaging in tweets]
+
+👉 6. Member that has the most claps and interactions on our medium page (iVerse Meduim Lord/Dame) -- 200$
+
+
+Adding to its 🍹juicy incentive plan.
+
+👉 Our Referral Program ✨
+
+Any member that refers a project for AMA on iSatoshi Verse will get a 10% commission 🤑
+
+👉 iSatoshi Verse Free 📺 Adsday
+
+On Wednesdays every week iSatoshi Verse will help place two free ads for our loyal members on its channels (Twitter, Telegram, Medium etc.) for Zero Fee.
+
+In our Universe we want to give back to the crypto community, The Satoshians 💪
+
+Contact @iSatohi_MasterRoy  for partnership, offers and to start up iSatoshi Verse in your local community
+
+Follow On;
+
+Website: https://isatoshi.org/
+
+Twitter: https://twitter.com/iSatoshi_Verse
+
+Reddit: https://www.reddit.com/user/isatoshiVerse/
+
+Meduim: https://medium.com/@iSatoshiVerse
+
+Contact: contact@isatoshi.netcontact@isatoshi.netcontact@isatoshi.net
+
+If you would love to join our private investors group for free fill the form: https://forms.gle/qkk3Mi4tWjbyoa8c7 ; at the iSatoshi investors group you get access to early project seed and private rounds.
+
+Glad To Have You Join Us 🤩
+`
 
 const START_MSG = 'Add me to a group! :)'
 
