@@ -8,6 +8,9 @@ const commandLineArgs = require('command-line-args')
 const markdownEscape = require('markdown-escape')
 const marked = require('marked')
 const { MongoClient } = require("mongodb");
+var http = require('http');
+var fs = require('fs');
+var path = require('path');
 
 let database, users, template;
 
@@ -204,17 +207,17 @@ const removeMsgTemplate = chatId => {
 // owner id
 const getOwnerIdKey = chatId => `${chatId}_owner_id`
 
-const getOwnerId = async (chatId) => {
-  client.connect(async (err, client) => {
-    const database = client.db("welcome_bot");
-    const users = database.collection("users");
-    const uu = await users.findOne({ key: getOwnerIdKey(chatId) });
+// const getOwnerId = async (chatId) => {
+//   client.connect(async (err, client) => {
+//     const database = client.db("welcome_bot");
+//     const users = database.collection("users");
+//     const uu = await users.findOne({ key: getOwnerIdKey(chatId) });
 
-    console.log("+++++++++++++", uu);
-    // client.close();
-    return uu;
-  });
-}
+//     console.log("+++++++++++++", uu);
+//     // client.close();
+//     return uu;
+//   });
+// }
 
 const setOwnerId = async (chatId, ownerId) => {
 
@@ -370,3 +373,17 @@ const run = async () => {
 }
 
 run()
+
+
+
+var server_port = 5000 || process.env.PORT || 80;
+var server_host = '127.0.0.1' || '0.0.0.0';
+
+
+http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  res.write('Hello World!');
+  res.end();
+}).listen(server_port, server_host, function() {
+  console.log('Listening on port %d', server_port);
+});
