@@ -2,7 +2,7 @@
 // ----------------
 // modules
 
-const storage = require('node-persist')
+// const storage = require('node-persist')
 const TelegramBot = require('node-telegram-bot-api')
 const commandLineArgs = require('command-line-args')
 const markdownEscape = require('markdown-escape')
@@ -336,43 +336,6 @@ const startHandler = msg => {
 // ----------------
 // execution
 
-const run = async () => {
-  await storage.init({ dir: PERSISTENCE_PATH })
-
-  // client.connect((err, client) => {
-  //   const collection = client.db("welcome_bot").collection("templates");
-  //   // perform actions on the collection object
-  //   collection.insertOne({ key: '213s', message: '99' });
-  //   client.close();
-  // });
-
-  // send welcome message to new members (or intro message)
-  bot.on('new_chat_members', newMemberHandler)
-
-  // if bot leaves the group, remove its info
-  bot.on('left_chat_member', memberLeftHandler)
-
-  // change welcome message
-
-  const baseChangeMsgCommandRegExp = `\\/change_welcome_message(?:@${BOT_USERNAME})?`
-
-  // change the message on request
-  const changeMsgCommandRegExp = new RegExp(`${baseChangeMsgCommandRegExp}\\s([\\s\\S]+)`)
-  bot.onText(changeMsgCommandRegExp, changeWelcomeMessageHandler)
-
-  // detect empty messages in command
-  const changeMsgCommandRegExpEmpty = new RegExp(`${baseChangeMsgCommandRegExp}$`)
-  bot.onText(changeMsgCommandRegExpEmpty, changeWelcomeMessageEmptyHandler)
-
-  // display help message
-  const helpCommandRegExp = new RegExp(`\\/help(?:@${BOT_USERNAME})?`)
-  bot.onText(helpCommandRegExp, helpHandler)
-
-  // answer to start command
-  bot.onText(/\/start/, startHandler)
-}
-
-run()
 
 
 
@@ -385,5 +348,45 @@ http.createServer(function (req, res) {
   res.write('Hello World!');
   res.end();
 }).listen(server_port, server_host, function() {
+  const run = async () => {
+    // await storage.init({ dir: PERSISTENCE_PATH })
+  
+    // client.connect((err, client) => {
+    //   const collection = client.db("welcome_bot").collection("templates");
+    //   // perform actions on the collection object
+    //   collection.insertOne({ key: '213s', message: '99' });
+    //   client.close();
+    // });
+
+    console.log("Starting Bot")
+  
+    // send welcome message to new members (or intro message)
+    bot.on('new_chat_members', newMemberHandler)
+  
+    // if bot leaves the group, remove its info
+    bot.on('left_chat_member', memberLeftHandler)
+  
+    // change welcome message
+  
+    const baseChangeMsgCommandRegExp = `\\/change_welcome_message(?:@${BOT_USERNAME})?`
+  
+    // change the message on request
+    const changeMsgCommandRegExp = new RegExp(`${baseChangeMsgCommandRegExp}\\s([\\s\\S]+)`)
+    bot.onText(changeMsgCommandRegExp, changeWelcomeMessageHandler)
+  
+    // detect empty messages in command
+    const changeMsgCommandRegExpEmpty = new RegExp(`${baseChangeMsgCommandRegExp}$`)
+    bot.onText(changeMsgCommandRegExpEmpty, changeWelcomeMessageEmptyHandler)
+  
+    // display help message
+    const helpCommandRegExp = new RegExp(`\\/help(?:@${BOT_USERNAME})?`)
+    bot.onText(helpCommandRegExp, helpHandler)
+  
+    // answer to start command
+    bot.onText(/\/start/, startHandler)
+  }
+  
+  run()
+  
   console.log('Listening on port %d', server_port);
 });
