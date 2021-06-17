@@ -7,6 +7,9 @@ const TelegramBot = require('node-telegram-bot-api')
 const commandLineArgs = require('command-line-args')
 const markdownEscape = require('markdown-escape')
 const marked = require('marked')
+const { MongoClient } = require("mongodb");
+
+let database, users, template;
 
 // ----------------
 // marked renderer options for telegram HTML
@@ -17,6 +20,11 @@ markedRenderer.paragraph = (text) => `\n\n${text}`
 markedRenderer.list = (text) => `\n${text}`
 markedRenderer.listitem = (text) => `\n- ${text}`
 
+// Connection URI
+const uri =
+  "mongodb+srv://ochui:QJth0Uw6No0XYaYU@cluster0.wzgi1.gcp.mongodb.net?retryWrites=true&w=majority";
+// Create a new MongoClient
+const client = new MongoClient(uri);
 // ----------------
 // command line arguments
 
@@ -67,8 +75,7 @@ IMPORTANT: \`$username\` could fail if the user hasn't defined a username, and w
 
 Keep in mind that *only* the user who introduced me to this group ($username) can execute this command.
 
-This bot is free and open source and was created by @DaniGuardiola
-Repo: https://github.com/daniguardiola/telegram-welcome-bot
+This bot created by @Appless_Machine
 
 Enjoy! 😊`
 
@@ -91,8 +98,8 @@ IMPORTANT: \`$username\` could fail if the user hasn't defined a username, and w
 
 Keep in mind that *only* the user who introduces me to a group can execute this command.
 
-This bot is free and open source and was created by @DaniGuardiola
-Repo: https://github.com/daniguardiola/telegram-welcome-bot
+This bot created by @Appless_Machine
+
 
 Enjoy! 😊`
 
@@ -140,7 +147,21 @@ const getMsgTemplate = async chatId => {
   if (msgTemplates[chatId]) return msgTemplates[chatId]
 
   // persisted
-  const storedTemplate = await storage.getItem(getMsgTemplateKey(chatId))
+  const storedTemplate = () => {
+
+    client.connect((err, client) => {
+      const database = client.db("welcome_bot");
+      const template = database.collection("templates");
+
+      var msgt = template.findOne({ key: getMsgTemplateKey(chatId) })
+
+      console.log(msgt);
+      // client.close();
+      return msgt;
+    });
+    // await template.findOne({key: getMsgTemplateKey(chatId)})
+
+  }
   if (storedTemplate) {
     msgTemplates[chatId] = storedTemplate // load in memory
     return storedTemplate
@@ -151,24 +172,79 @@ const getMsgTemplate = async chatId => {
   return DEFAULT_MSG_TEMPLATE
 }
 
-const setMsgTemplate = async (chatId, msgTemplate) => {
-  await storage.setItem(getMsgTemplateKey(chatId), msgTemplate)
+const setMsgTemplate = (chatId, msgTemplate) => {
+  const doc = { key: getMsgTemplateKey(chatId), message: msgTemplate };
+
+  client.connect((err, client) => {
+    const database = client.db("welcome_bot");
+    const template = database.collection("templates");
+
+    template.insertOne(doc)
+    console.log("Inserted successfully to server", doc);
+    // client.close();
+  });
+
+
   msgTemplates[chatId] = msgTemplate
 }
 
-const removeMsgTemplate = async chatId => {
+const removeMsgTemplate = chatId => {
   delete msgTemplates[chatId]
-  await storage.removeItem(`${chatId}_msg_template`)
+
+  client.connect((err, client) => {
+    const database = client.db("welcome_bot");
+    const template = database.collection("templates");
+
+    template.deleteOne({ key: `${chatId}_msg_template` })
+    console.log("deleted successfully to server");
+    // client.close();
+  });
 }
 
 // owner id
 const getOwnerIdKey = chatId => `${chatId}_owner_id`
 
-const getOwnerId = chatId => storage.getItem(getOwnerIdKey(chatId))
+const getOwnerId = async (chatId) => {
+  client.connect(async (err, client) => {
+    const database = client.db("welcome_bot");
+    const users = database.collection("users");
+    const uu = await users.findOne({ key: getOwnerIdKey(chatId) });
 
-const setOwnerId = (chatId, ownerId) => storage.setItem(getOwnerIdKey(chatId), ownerId)
+    console.log("+++++++++++++", uu);
+    // client.close();
+    return uu;
+  });
+}
 
-const removeOwnerId = chatId => storage.removeItem(getOwnerIdKey(chatId))
+const setOwnerId = async (chatId, ownerId) => {
+
+  var uul;
+  client.connect((err, client) => {
+    const users = client.db("welcome_bot").collection("users");
+    uul = users.insertOne({ key: getOwnerIdKey(chatId), message: ownerId });
+    
+  });
+
+  // client.close();
+
+  return uul;
+
+
+}
+
+const removeOwnerId = (chatId) => {
+
+
+  var dl;
+  client.connect((err, client) => {
+    const users_d = client.db("welcome_bot").collection("users");
+    dl = users_d.deleteOne({ key: getOwnerIdKey(chatId) });
+    // client.close();
+  });
+
+  return dl;
+
+}
 
 // ----------------
 // handlers
@@ -203,18 +279,32 @@ const changeWelcomeMessageHandler = async (msg, match) => {
   const groupName = msg.chat.title
   const owner = msg.from
 
-  const ownerId = await getOwnerId(chatId)
+  // var ownerId; //= await getOwnerId(chatId)
+  // getOwnerId(chatId).then(function(re) {
+  //   console.log('--', re, owner)
+  // })
 
-  if (owner.id !== ownerId) return sendErrorMessage(chatId, 'Only the user who introduced me to this group can change the message!')
+  client.connect(async (err, client) => {
+    const database = client.db("welcome_bot");
+    const users = database.collection("users");
+    const ownerId = await users.findOne({ key: getOwnerIdKey(chatId) });
 
-  const msgTemplate = match[1].trim()
 
-  if (!msgTemplate.length) return changeWelcomeMessageEmptyHandler(msg)
+    console.log(ownerId, owner)
 
-  await setMsgTemplate(chatId, msgTemplate)
+    if (owner.id !== ownerId.message) return sendErrorMessage(chatId, 'Only the user who introduced me to this group can change the message!')
+  
+    const msgTemplate = match[1].trim()
+  
+    if (!msgTemplate.length) return changeWelcomeMessageEmptyHandler(msg)
+  
+    await setMsgTemplate(chatId, msgTemplate)
+  
+    const exampleMessage = composeMessage(msgTemplate, owner, groupName)
+    return sendMessage(chatId, `✔️ New welcome message set! Here's an example:\n\n${exampleMessage}`)
+  });
 
-  const exampleMessage = composeMessage(msgTemplate, owner, groupName)
-  return sendMessage(chatId, `✔️ New welcome message set! Here's an example:\n\n${exampleMessage}`)
+ 
 }
 
 const changeWelcomeMessageEmptyHandler = msg => {
@@ -245,6 +335,13 @@ const startHandler = msg => {
 
 const run = async () => {
   await storage.init({ dir: PERSISTENCE_PATH })
+
+  // client.connect((err, client) => {
+  //   const collection = client.db("welcome_bot").collection("templates");
+  //   // perform actions on the collection object
+  //   collection.insertOne({ key: '213s', message: '99' });
+  //   client.close();
+  // });
 
   // send welcome message to new members (or intro message)
   bot.on('new_chat_members', newMemberHandler)

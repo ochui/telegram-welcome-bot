@@ -1,0 +1,1 @@
+web: npm run start -- -p ~/bot -t 1895100391:AAG-InORV9eSwDKPvd__JXzDEMBvuAOoVEI  -u iSatoshiVerseBot
